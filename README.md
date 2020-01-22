@@ -1,4 +1,5 @@
 # sablier-finance-poc
+This is a POC project which uses the sablier protocol for streaming ERC20 tokens over a period of time use at own risk
 
 ## Project setup
 ```
