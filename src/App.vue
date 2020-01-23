@@ -23,7 +23,7 @@
                         </v-toolbar>
                         <v-card-text>
                             <template>
-                                <v-stepper v-model="e6" vertical>
+                                <v-stepper v-model="e6" :complete="e6===4" vertical>
                                     <v-stepper-step class="black-color" :complete="e6 > 1" step="1">
                                         Create ETH Wallet
                                         <small>Create ETH wallet used to dispense Wealth</small>
@@ -43,12 +43,13 @@
                                                 <v-form ref="form" v-model="valid" lazy-validation>
                                                     <v-text-field v-model="ethAddress" label="Eth Address" disabled>
                                                     </v-text-field>
-                                                    <v-text-field v-model="tokenAddress" label="Token Adddress" required></v-text-field>
-                                                    <v-text-field v-model="tokenAmount" label="Token Amount" required></v-text-field>
+                                                    <v-text-field v-model="tokenAddress" label="Token Adddress" :rules="tokenAddressRules" required></v-text-field>
+                                                    <v-text-field v-model="receipientAddress" label="Receipient Adddress" :rules="tokenAddressRules" required></v-text-field>
+                                                    <v-text-field v-model="tokenAmount" label="Token Amount" :rules="tokenAmountRules" required></v-text-field>
                                                 </v-form>
                                             </v-card-text>
                                         </v-card>
-                                        <v-btn @click="approve">Aprove</v-btn>
+                                        <v-btn :disabled="!valid" @click="approve">Aprove</v-btn>
                                         <v-btn @click="e6=1" text>Cancel</v-btn>
                                     </v-stepper-content>
 
@@ -106,6 +107,7 @@
                 </v-card-text>
             </v-card>
         </v-footer>
+        <loading :active.sync="isLoading" :can-cancel="false" :is-full-page="true"></loading>
     </v-content>
 </v-app>
 </template>
@@ -113,9 +115,16 @@
 <script>
 import eth from 'node-eth-address'
 import swal from 'sweetalert2'
+import Loading from 'vue-loading-overlay';
+// Import stylesheet
+import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
+    components: {
+        Loading
+    },
     data() {
         return {
+            valid: true,
             e6: 1,
             collapseOnScroll: true,
             icons: [],
@@ -124,10 +133,18 @@ export default {
             convertedEndDate: "",
             convertedStartDate: "",
             tokenAmount: 0,
-            tokenAmountRules: [],
+            tokenAmountRules: [
+                v => !!v || 'Amount to approve is required',
+                v => (v && !isNaN(v) && parseInt(v) > 0) || 'Amount to approve must be a valid number and greater than 0'
+            ],
             tokenAddress: "",
-            tokenAddressRules: [],
-            ethAddress: ""
+            tokenAddressRules: [
+                v => !!v || 'Token address is required',
+                v => (v && web3.utils.isAddress(v)) || 'Invalid token address'
+            ],
+            ethAddress: "",
+            isLoading: false,
+            receipientAddress: ''
         }
     },
     mounted() {
@@ -136,8 +153,24 @@ export default {
         //this.preventCodeInspect()
     },
     methods: {
+        toPrecision(number) {
+            var preciseNumber = (number).toLocaleString('fullwide', {
+                useGrouping: false
+            })
+            console.log('preciseNumber: ', preciseNumber)
+            return preciseNumber
+        },
+        errorBlock(message) {
+            swal.fire({
+                title: 'Error',
+                icon: 'error',
+                text: message,
+                showCloseButton: false,
+                showCancelButton: false
+            })
+        },
         checkDate(date) {
-            var now = new Date().getTime()
+            var now = Math.round(new Date().getTime()/1000)
             console.log("date>now: ", date > now, " now: ", now, " date: ", date)
             if (date > now) {
                 return true
@@ -155,7 +188,7 @@ export default {
             this.e6--;
         },
         setStartDate() {
-            this.convertedStartDate = new Date(this.startDate).getTime()
+            this.convertedStartDate = Math.round(parseInt(new Date(this.startDate).getTime()) / 1000)
             if (this.checkDate(this.convertedStartDate)) {
                 console.log('selected start datetime: ', this.convertedStartDate)
                 this.e6++
@@ -163,34 +196,114 @@ export default {
                 this.error("Start Date must be greater than the current time and date")
             }
         },
-        cancelAproval() {
-
+        cancelAproval: async function () {
+            this.isLoading = false
+            var newToken = new web3.eth.Contract(this.$store.state.erc20, this.tokenAddress, {
+                from: web3.eth.defaultAccount,
+                gasPrice: 1000000000000
+            })
+            var userAllowance = await newToken.methods.allowance(web3.eth.defaultAccount, this.$store.state.sablier.address).call({
+                gas: 8000000
+            })
+            var This = this
+            newToken.methods.decreaseAllowance(this.$store.state.sablier.address, userAllowance).send({
+                gas: 8000000
+            }).then((results, error) => {
+                if (error) {
+                    This.error('Something went wrong whilst reverting allowance')
+                    this.isLoading = false
+                } else {
+                    This.success('Reverted token allowance')
+                    This.isLoading = false;
+                }
+            }).catch((error) => {
+                This.error('Something went wrong whilst reverting allowance')
+                this.isLoading = false
+            })
         },
         startStream() {
-            this.convertedEndDate = new Date(this.endDate).getTime()
-            if (this.checkDate(this.convertedEndDate)) {
-                console.log('selected end datetime: ', this.convertedEndDate)
+            this.isLoading = true
+            this.convertedEndDate = Math.round(parseInt(new Date(this.endDate).getTime()) / 1000)
+            let This = this
+            console.log('endDate: ', this.convertedEndDate, ' startDate: ', this.convertedStartDate)
+            if (!this.checkDate(this.convertedEndDate)) {
+                this.error("End Date must be greater than the current time and date")
             } else if (this.convertedStartDate === this.convertedEndDate) {
                 this.error("Start and End Date must not be equal")
-            } else if (this.convertedEndDate > this.convertedStartDate) {
-                this.error("End date and time must be greater than the start date and time")
             } else {
-                this.error("End Date must be greater than the current time and date")
+                console.log('selected end datetime: ', this.convertedEndDate)
+                this.$store.state.sablier.methods.createStream(This.receipientAddress, This.tokenAmount, This.tokenAddress, This.convertedStartDate, This.convertedEndDate).send({
+                    gas: 8000000
+                }).then((results, error) => {
+                    if (error) {
+                        This.error('Something went wrong whilst creating stream')
+                        this.isLoading = false
+                    } else {
+                        This.success('Succesfully created stream')
+                        This.isLoading = false;
+                    }
+                }).catch((error) => {
+                    console.log('error whilst creating stream: ', error)
+                    This.error('Something went wrong whilst creating stream')
+                    This.isLoading = false;
+                })
             }
         },
         allowedDates(val) {
-
             var today = new Date().getDate()
             var date = parseInt(val.split('-')[2], 10) >= today
             console.log(parseInt(val.split('-')[2], 10) >= today, today, parseInt(val.split('-')[2], 10))
             return date
         },
-        approve() {
-            this.e6++
+        approve: async function () {
+            this.isLoading = true
+            var newToken = new web3.eth.Contract(this.$store.state.erc20, this.tokenAddress, {
+                from: web3.eth.defaultAccount,
+                gasPrice: 1000000000000
+            })
+            let This = this
+            var userBalance = await newToken.methods.balanceOf(web3.eth.defaultAccount).call({
+                gas: 8000000
+            })
+            userBalance = parseInt(userBalance)
+            var decimals = await newToken.methods.decimals().call({
+                gas: 8000000
+            })
+            console.log('token decimals: ', decimals)
+            this.tokenAmount = this.tokenAmount * 10 ** decimals
+            this.tokenAmount = this.toPrecision(this.tokenAmount)
+            console.log('tokenAmount: ', this.tokenAmount)
+            console.log('userBalance: ', userBalance)
+            if (userBalance >= this.tokenAmount) {
+                newToken.methods.approve(this.$store.state.sablier.address, this.tokenAmount).send({
+                    gas: 800000
+                }).then((results, error) => {
+                    console.log('results: ', results, ' error: ', error)
+                    if (error) {
+                        This.error('Something went wrong whilst approving sablier contract to spend tokens')
+                        This.isLoading = false;
+                    } else {
+                        this.isLoading = false
+                        this.e6++
+                    }
+                })
+            } else {
+                this.error('Seems like you dont have enough tokens')
+                this.isLoading = false
+            }
+            console.log('newToken: ', newToken)
         },
         init() {
-            this.ethAddress = this.$store.state.address
-            console.log("created address: ", this.ethAddress)
+            console.log('embark: ', this.$store.state.embark)
+            console.log('sablier: ', this.$store.state.sablier.address)
+            this.$store.state.embark.onReady((error) => {
+                if (error) {
+                    this.errorBlock('Seems like you dont have metamask installed')
+                } else {
+                    this.ethAddress = this.$store.state.address
+                    console.log("created address: ", this.ethAddress)
+                }
+            })
         },
         preventContextMenu() {
             document.addEventListener('contextmenu', function (e) {
