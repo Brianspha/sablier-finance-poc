@@ -42,15 +42,15 @@ module.exports = {
   // default environment, merges with the settings in default
   // assumed to be the intended environment by `embark run`
   development: {
-      deploy: {
+    deploy: {
       CTokenManager: {
         args: []
       },
       Sablier: {
         args: ['$CTokenManager']
       },
-      ERC20:{
-        args:[
+      ERC20: {
+        args: [
           "SWAGTOKEN",
           "SWT",
           18,
@@ -58,9 +58,29 @@ module.exports = {
         ]
       }
     }
-  }
-  ,
+  },
+  infura: {
+    deploy: {
+      CTokenManager: {
+        args: [],
+        gasPrice: 1000000000000
+      },
+      Sablier: {
+        args: ['$CTokenManager'],
+        gasPrice: 1000000000000
+      },
+      ERC20: {
+        args: [
+          "SWAGTOKEN",
+          "SWT",
+          18,
+          100000000
+        ],
+        gasPrice: 1000000000000
 
+      }
+    }
+  },
   // merges with the settings in default
   // used with "embark run privatenet"
   privatenet: {},

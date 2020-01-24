@@ -23,3 +23,25 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Running Project locally (embark)
+
+Install embark globally
+```
+npm install -g embark
+```
+Then in the project folder cmd run embark simulator by typing the following command
+
+
+
+### Compile contract
+
+```
+embark run --nodashboard
+
+```
+
+### Screenshots
+
+1. ![Alt text](/screenshots/s1.PNG)
+2. ![Alt text](/screenshots/s2.PNG)

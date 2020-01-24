@@ -1,3 +1,7 @@
+require("dotenv").config({
+  path: "config/vars.env",
+  encoding: "utf8"
+})
 // This file contains only the basic configuration you need to run Embark's node
 // For additional configurations, see: https://embark.status.im/docs/blockchain_configuration.html
 module.exports = {
@@ -38,13 +42,13 @@ module.exports = {
     miningMode: 'off'
   },
 
-  externalnode: {
-    endpoint: "URL_OF_THE_NODE", // Endpoint of an node to connect to. Can be on localhost or on the internet
+  infura: {
+    endpoint:  process.env.ROPSTEN, // Endpoint of an node to connect to. Can be on localhost or on the internet
     accounts: [
       {
-        mnemonic: "YOUR_MNEMONIC",
+        mnemonic: process.env.MNEUMONIC,
         hdpath: "m/44'/60'/0'/0/",
-        numAddresses: "1"
+        numAddresses: "10"
       }
     ]
   },

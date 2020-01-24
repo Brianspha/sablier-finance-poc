@@ -4,90 +4,142 @@
         <v-app-bar class="app-color" :collapse="!collapseOnScroll" :collapse-on-scroll="collapseOnScroll">
             <v-toolbar-title v-ripple>2Mush-Wealth</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn icon>
-                <v-icon>help</v-icon>
-            </v-btn>
-            <v-btn icon>
-                <v-icon>update</v-icon>
+            <v-btn href="https://github.com/Brianspha/sablier-finance-poc" icon>
+                <v-icon>mdi-github-circle</v-icon>
             </v-btn>
         </v-app-bar>
     </div>
     <v-content>
-        <v-container class="fill-height" fluid>
-            <v-row align="center" justify="center">
-                <v-col cols="12" sm="8" md="4">
-                    <v-card class="elevation-12">
-                        <v-toolbar flat>
-                            <v-toolbar-title>Wealth Form</v-toolbar-title>
-                            <v-spacer />
-                        </v-toolbar>
-                        <v-card-text>
-                            <template>
-                                <v-stepper v-model="e6" :complete="e6===4" vertical>
-                                    <v-stepper-step class="black-color" :complete="e6 > 1" step="1">
-                                        Create ETH Wallet
-                                        <small>Create ETH wallet used to dispense Wealth</small>
-                                    </v-stepper-step>
+        <v-card>
+            <v-tabs background-color="white" color="deep-purple accent-4" right>
+                <v-tab>Create Stream</v-tab>
+                <v-tab>Manage Streams</v-tab>
+                <v-tab>FAQ</v-tab>
 
-                                    <v-stepper-content step="1">
-                                        <v-btn @click="e6 = 2">Create</v-btn>
-                                    </v-stepper-content>
+                <v-tab-item>
+                    <v-row align="center" justify="center">
+                        <v-col cols="12" sm="8" md="4">
+                            <v-card class="elevation-12">
+                                <v-toolbar flat>
+                                    <v-toolbar-title>Wealth Form</v-toolbar-title>
+                                    <v-spacer />
+                                </v-toolbar>
+                                <v-card-text>
+                                    <template>
+                                        <v-stepper v-model="e6" :complete="e6===4" vertical>
+                                            <v-stepper-step color="deep-purple accent-4"  class="black-color" :complete="e6 > 1" step="1">
+                                                Create ETH Wallet
+                                                <small>Create ETH wallet used to dispense Wealth</small>
+                                            </v-stepper-step>
 
-                                    <v-stepper-step :complete="e6 > 2" step="2">Approve Transfer of tokens to
-                                        Created ETH
-                                    </v-stepper-step>
+                                            <v-stepper-content step="1">
+                                                <v-btn @click="e6 = 2" color="deep-purple accent-4">Create</v-btn>
+                                            </v-stepper-content>
+                                            <v-stepper-step color="deep-purple accent-4"  :complete="e6 > 2" step="2">Start Date</v-stepper-step>
+                                            <v-stepper-content step="2">
+                                                <v-card class="mb-12">
+                                                    <v-card-text>
+                                                        <datetime type="datetime" v-model="startDate"></datetime>
+                                                    </v-card-text>
+                                                </v-card>
+                                                <v-row>
+                                                    <v-col>
+                                                        <v-btn @click="setStartDate" color="deep-purple accent-4">Continue</v-btn>
+                                                        <v-btn @click="back" text v-ripple color="deep-purple accent-4">Back</v-btn>
+                                                    </v-col>
+                                                </v-row>
+                                            </v-stepper-content>
+                                            <v-stepper-step color="deep-purple accent-4"  :complete="e6 > 3" step="3">End Date</v-stepper-step>
+                                            <v-stepper-content step="3">
+                                                <v-card class="mb-12">
+                                                    <v-card-text>
+                                                        <datetime type="datetime" v-model="endDate"></datetime>
+                                                    </v-card-text>
+                                                </v-card>
+                                                <v-row>
+                                                    <v-col>
+                                                        <v-btn @click="setEndDate" color="deep-purple accent-4">Continue</v-btn>
+                                                        <v-btn @click="back" text v-ripple color="deep-purple accent-4">Back</v-btn>
+                                                    </v-col>
+                                                </v-row>
+                                            </v-stepper-content>
+                                            <v-stepper-step color="deep-purple accent-4"  :complete="e6 > 4" step="4">Approve Transfer of tokens to
+                                                Created ETH
+                                            </v-stepper-step>
+                                            <v-stepper-content step="4">
+                                                <v-card class="mb-12">
+                                                    <v-card-text>
+                                                        <v-form ref="form" v-model="valid" lazy-validation>
+                                                            <v-text-field v-model="ethAddress" :rules="tokenAddressRules" label="Recipient Address">
+                                                            </v-text-field>
+                                                            <v-text-field v-model="tokenAddress" label="Token Adddress" :rules="tokenAddressRules" required></v-text-field>
+                                                            <v-text-field v-model="tokenAmount" label="Token Amount" :rules="tokenAmountRules" required></v-text-field>
+                                                        </v-form>
+                                                    </v-card-text>
+                                                </v-card>
+                                                <v-btn :disabled="!valid" @click="approve" color="deep-purple accent-4">Aprove</v-btn>
+                                                <v-btn @click="back" text color="deep-purple accent-4">Cancel</v-btn>
+                                            </v-stepper-content>
+                                            <v-stepper-step color="deep-purple accent-4"  :complete="e6 ===5" step="5">Create Stream
+                                            </v-stepper-step>
+                                            <v-stepper-content step="5">
+                                                <v-btn @click="startStream" color="deep-purple accent-4">Create</v-btn>
+                                                <v-btn @click="cancelAproval" color="deep-purple accent-4">Cancel</v-btn>
+                                            </v-stepper-content>
+                                        </v-stepper>
+                                    </template>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-tab-item>
+                <v-tab-item>
+                    <v-row align="center" justify="center">
+                        <v-col v-if="this.$store.state.streams.length===0" cols="12" md="4">
+                            <v-card class="mx-auto">
+                                <v-card-text>
+                                    Currently No Active Streams
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                        <v-col v-else v-for="(stream,i) in this.$store.state.streams" :key="i" cols="12" md="4">
+                            <v-card class="mx-auto" max-width="450" v-ripple>
+                                <v-card-text class="text--primary">
+                                    <div>Receipient: {{stream.receipient}}</div>
+                                    <div>Sender: {{stream.sender}}</div>
+                                    <div>Deposit: {{stream.deposit}}</div>
+                                    <div>Token Address: {{stream.tokenAddress}}</div>
+                                    <div>Start Time: {{stream.startTime}}</div>
+                                    <div>Stop Time: {{stream.stopTime}}</div>
+                                    <div>Remaining Balance: {{stream.remainingBalance}}</div>
+                                    <div>Rate Per Second: {{stream.ratePerSecond}}</div>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-btn color="deep-purple accent-4" @click="dialog=true; selectedStream=stream" text>
+                                        Widthdraw
+                                    </v-btn>
+                                    <v-btn color="deep-purple accent-4" text>
+                                        Cancel Stream
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-col>
 
-                                    <v-stepper-content step="2">
-                                        <v-card class="mb-12">
-                                            <v-card-text>
-                                                <v-form ref="form" v-model="valid" lazy-validation>
-                                                    <v-text-field v-model="ethAddress" label="Eth Address" disabled>
-                                                    </v-text-field>
-                                                    <v-text-field v-model="tokenAddress" label="Token Adddress" :rules="tokenAddressRules" required></v-text-field>
-                                                    <v-text-field v-model="receipientAddress" label="Receipient Adddress" :rules="tokenAddressRules" required></v-text-field>
-                                                    <v-text-field v-model="tokenAmount" label="Token Amount" :rules="tokenAmountRules" required></v-text-field>
-                                                </v-form>
-                                            </v-card-text>
-                                        </v-card>
-                                        <v-btn :disabled="!valid" @click="approve">Aprove</v-btn>
-                                        <v-btn @click="e6=1" text>Cancel</v-btn>
-                                    </v-stepper-content>
-
-                                    <v-stepper-step :complete="e6 > 3" step="3">Start Date</v-stepper-step>
-                                    <v-stepper-content step="3">
-                                        <v-card class="mb-12">
-                                            <v-card-text>
-                                                <datetime type="datetime" v-model="startDate"></datetime>
-                                            </v-card-text>
-                                        </v-card>
-                                        <v-row>
-                                            <v-col>
-                                                <v-btn @click="setStartDate">Continue</v-btn>
-                                                <v-btn @click="cancelAproval" text v-ripple>Cancel</v-btn>
-                                            </v-col>
-                                        </v-row>
-                                    </v-stepper-content>
-
-                                    <v-stepper-step step="4">End Date</v-stepper-step>
-                                    <v-stepper-content step="4">
-                                        <v-card class="mb-12">
-                                            <v-card-text>
-                                                <datetime zone="local" type="datetime" v-model="endDate"></datetime>
-                                            </v-card-text>
-                                        </v-card>
-                                        <v-btn @click="startStream()">Start Stream</v-btn>
-                                        <v-btn @click="back" text v-ripple>Back</v-btn>
-                                        <v-btn @click="cancelAproval" text v-ripple>Cancel</v-btn>
-                                    </v-stepper-content>
-                                </v-stepper>
-                            </template>
-                        </v-card-text>
-                    </v-card>
-                </v-col>
-
-            </v-row>
-
-        </v-container>
+                    </v-row>
+                </v-tab-item>
+                <v-tab-item>
+                    <v-row align="center" justify="center">
+                        <v-col cols="12" md="4">
+                            <v-card>
+                                <v-card-text>
+                                    Coming Soon
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-tab-item>
+            </v-tabs>
+        </v-card>
         <v-footer padless>
             <v-card flat tile class="lighten-1  text-center" style="width:100vw;">
                 <v-card-text>
@@ -107,6 +159,21 @@
                 </v-card-text>
             </v-card>
         </v-footer>
+        <v-dialog v-model="dialog">
+            <v-card>
+                <v-card-title class="headline lighten-2" primary-title>
+                    Available balance: {{this.selectedStream.remainingBalance}}
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-text-field v-model="withDrawAmount" label="Withdraw Amount" :rules="tokenAmountRules" required></v-text-field>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" text @click="withdrawStream">
+                        Withdraw
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <loading :active.sync="isLoading" :can-cancel="false" :is-full-page="true"></loading>
     </v-content>
 </v-app>
@@ -116,6 +183,7 @@
 import eth from 'node-eth-address'
 import swal from 'sweetalert2'
 import Loading from 'vue-loading-overlay';
+import bigNumber from 'bignumber.js'
 // Import stylesheet
 import 'vue-loading-overlay/dist/vue-loading.css';
 export default {
@@ -124,7 +192,11 @@ export default {
     },
     data() {
         return {
+            selectedStream: 0,
+            withDrawAmount: 0,
+            dialog: false,
             valid: true,
+            approved: false,
             e6: 1,
             collapseOnScroll: true,
             icons: [],
@@ -134,8 +206,8 @@ export default {
             convertedStartDate: "",
             tokenAmount: 0,
             tokenAmountRules: [
-                v => !!v || 'Amount to approve is required',
-                v => (v && !isNaN(v) && parseInt(v) > 0) || 'Amount to approve must be a valid number and greater than 0'
+                v => !!v || 'Amount is required',
+                v => (v && !isNaN(v) && parseInt(v) > 0) || 'Amount  must be a valid number and greater than 0'
             ],
             tokenAddress: "",
             tokenAddressRules: [
@@ -149,10 +221,44 @@ export default {
     },
     mounted() {
         this.init()
-        //this.preventContextMenu()
-        //this.preventCodeInspect()
+        this.preventContextMenu()
+        this.preventCodeInspect()
     },
     methods: {
+        withdrawStream() {
+            this.isLoading = true
+            this.withDrawAmount = new bignumber(this.widthDrawAmount).toFixed()
+            if (this.withDrawAmount > stream.remainingBalance) {
+                this.error("Cannot withdraw more than whats available")
+                this.isLoading = false
+            } else {
+                this.$store.state.sablier.methods.withdrawFromStream(this.selectedStream, this.withDrawAmount).send({
+                    gas: 8000000
+                }).then((results, error) => {
+                    if (error) {
+                        this.error("Something went wrong whilst withdrawing from stream")
+                    } else {
+                        this.success("Succesfully withdrew from stream")
+                        this.isLoading = false
+                        This.dialog = false
+                    }
+                }).catch((error) => {
+                    this.isLoading = false
+                    This.dialog = false
+                    console.log('errro: ', error)
+                })
+            }
+        },
+        setEndDate() {
+            this.convertedEndDate = new bigNumber((parseInt(new Date(this.endDate).getTime()) / 1000)).toFixed()
+            if (!this.checkDate(this.convertedEndDate)) {
+                this.error("End Date must be greater than the current time and date")
+            } else if (this.convertedStartDate === this.convertedEndDate) {
+                this.error("Start and End Date must not be equal")
+            } else {
+                this.e6++
+            }
+        },
         toPrecision(number) {
             var preciseNumber = (number).toLocaleString('fullwide', {
                 useGrouping: false
@@ -170,7 +276,7 @@ export default {
             })
         },
         checkDate(date) {
-            var now = Math.round(new Date().getTime()/1000)
+            var now = new bigNumber(new Date().getTime() / 1000).toFixed()
             console.log("date>now: ", date > now, " now: ", now, " date: ", date)
             if (date > now) {
                 return true
@@ -188,7 +294,7 @@ export default {
             this.e6--;
         },
         setStartDate() {
-            this.convertedStartDate = Math.round(parseInt(new Date(this.startDate).getTime()) / 1000)
+            this.convertedStartDate = new bigNumber((parseInt(new Date(this.startDate).getTime()) / 1000)).toFixed()
             if (this.checkDate(this.convertedStartDate)) {
                 console.log('selected start datetime: ', this.convertedStartDate)
                 this.e6++
@@ -215,6 +321,7 @@ export default {
                 } else {
                     This.success('Reverted token allowance')
                     This.isLoading = false;
+                    this.e6--
                 }
             }).catch((error) => {
                 This.error('Something went wrong whilst reverting allowance')
@@ -223,31 +330,37 @@ export default {
         },
         startStream() {
             this.isLoading = true
-            this.convertedEndDate = Math.round(parseInt(new Date(this.endDate).getTime()) / 1000)
             let This = this
-            console.log('endDate: ', this.convertedEndDate, ' startDate: ', this.convertedStartDate)
-            if (!this.checkDate(this.convertedEndDate)) {
-                this.error("End Date must be greater than the current time and date")
-            } else if (this.convertedStartDate === this.convertedEndDate) {
-                this.error("Start and End Date must not be equal")
-            } else {
-                console.log('selected end datetime: ', this.convertedEndDate)
-                this.$store.state.sablier.methods.createStream(This.receipientAddress, This.tokenAmount, This.tokenAddress, This.convertedStartDate, This.convertedEndDate).send({
-                    gas: 8000000
-                }).then((results, error) => {
-                    if (error) {
-                        This.error('Something went wrong whilst creating stream')
-                        this.isLoading = false
-                    } else {
-                        This.success('Succesfully created stream')
-                        This.isLoading = false;
-                    }
-                }).catch((error) => {
-                    console.log('error whilst creating stream: ', error)
+            this.$store.state.sablier.methods.createStream(This.ethAddress, This.tokenAmount, This.tokenAddress, This.convertedStartDate, This.convertedEndDate).send({
+                gas: 8000000
+            }).then((results, error) => {
+                if (error) {
                     This.error('Something went wrong whilst creating stream')
-                    This.isLoading = false;
-                })
-            }
+                    this.isLoading = false
+                } else {
+                    console.log('streamId: ', results.events.CreateStream.returnValues.streamId)
+                    this.$store.state.streamManager.methods.addToStreamersStreams(results.events.CreateStream.returnValues.streamId).send({
+                        gas: 8000000
+                    }).then((results, error) => {
+                        if (error) {
+                            This.isLoading = false;
+                        } else {
+                            This.success('Succesfully created stream')
+                            This.isLoading = false;
+                            This.loadStreams()
+                        }
+                    }).catch((error) => {
+                        console.log('error whilst adding to stream manager')
+                        This.isLoading = false
+                    })
+
+                    console.log('receipt: ', results)
+                }
+            }).catch((error) => {
+                console.log('error whilst creating stream: ', error)
+                This.error('Something went wrong whilst creating stream')
+                This.isLoading = false;
+            })
         },
         allowedDates(val) {
             var today = new Date().getDate()
@@ -255,13 +368,20 @@ export default {
             console.log(parseInt(val.split('-')[2], 10) >= today, today, parseInt(val.split('-')[2], 10))
             return date
         },
+        calculateDeposit(delta, deposit) {
+            let diff = deposit.minus(deposit.minus(deposit.mod(delta)))
+            deposit = new bigNumber(deposit).minus(diff)
+            console.log(deposit.toFixed())
+            return deposit
+        },
         approve: async function () {
             this.isLoading = true
+            let This = this
+            var timedelta = new bigNumber(this.convertedEndDate - this.convertedStartDate)
             var newToken = new web3.eth.Contract(this.$store.state.erc20, this.tokenAddress, {
                 from: web3.eth.defaultAccount,
                 gasPrice: 1000000000000
             })
-            let This = this
             var userBalance = await newToken.methods.balanceOf(web3.eth.defaultAccount).call({
                 gas: 8000000
             })
@@ -270,8 +390,13 @@ export default {
                 gas: 8000000
             })
             console.log('token decimals: ', decimals)
-            this.tokenAmount = this.tokenAmount * 10 ** decimals
-            this.tokenAmount = this.toPrecision(this.tokenAmount)
+            this.tokenAmount = new bigNumber(this.tokenAmount)
+            this.tokenAmount = this.tokenAmount.multipliedBy(new bigNumber(10).pow(decimals))
+            console.log('tokenAmount: ', this.tokenAmount)
+            this.tokenAmount = this.calculateDeposit(timedelta, this.tokenAmount).toFixed()
+            console.log('timedelta: ', timedelta, ' tokenAmount: ', this.tokenAmount)
+            console.log('endDate: ', this.convertedEndDate, ' startDate: ', this.convertedStartDate)
+            console.log('selected end datetime: ', this.convertedEndDate)
             console.log('tokenAmount: ', this.tokenAmount)
             console.log('userBalance: ', userBalance)
             if (userBalance >= this.tokenAmount) {
@@ -302,6 +427,37 @@ export default {
                 } else {
                     this.ethAddress = this.$store.state.address
                     console.log("created address: ", this.ethAddress)
+                    this.loadStreams()
+                }
+            })
+        },
+        loadStreams() {
+            let This = this
+            This.$store.state.streams = []
+            this.$store.state.streamManager.methods.getStreams().call({
+                gas: 8000000
+            }).then((ids, error) => {
+                if (!error && ids && ids.length > 0) {
+                    ids.map((id) => {
+                        This.$store.state.sablier.methods.getStream(id).call({
+                            gas: 8000000
+                        }).then((stream, error) => {
+                            if (!error) {
+                                console.log('stream: ', stream)
+                                This.$store.state.streams.push({
+                                    "receipient": stream.recipient,
+                                    "sender": stream.sender,
+                                    "deposit": stream.deposit,
+                                    "tokenAddress": stream.tokenAddress,
+                                    "startTime": stream.startTime,
+                                    "stopTime": stream.stopTime,
+                                    "remainingBalance": stream.remainingBalance,
+                                    "ratePerSecond": stream.ratePerSecond,
+                                    "id": id
+                                })
+                            }
+                        })
+                    })
                 }
             })
         },
