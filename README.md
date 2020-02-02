@@ -45,4 +45,4 @@ embark run --nodashboard
 
 1. ![Alt text](/screenshots/s1.png)
 2. ![Alt text](/screenshots/s2.png)
-3. ![Alt text](/screenshots/final.mp4)
+3. [![Demo](/screenshots/s1.png)](https://drive.google.com/file/d/1u9ATbfrc-nDdS1dBHyYteyTFl_AAmgxF/view?usp=sharing)
