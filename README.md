@@ -30,7 +30,7 @@ Install embark globally
 ```
 npm install -g embark
 ```
-Then in the project folder cmd run embark simulator by typing the following command
+Then in the project folder cmd run embark simulator by typing the following command in another cmd
 
 
 
@@ -43,6 +43,6 @@ embark run --nodashboard
 
 ### Screenshots
 
-1. ![Alt text](/screenshots/s1.PNG)
-2. ![Alt text](/screenshots/s2.PNG)
+1. ![Alt text](/screenshots/s1.png)
+2. ![Alt text](/screenshots/s2.png)
 3. ![Alt text](/screenshots/final.mp4)
