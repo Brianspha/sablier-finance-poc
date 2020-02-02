@@ -12,7 +12,8 @@ module.exports = {
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
       'no-unused-vars': 'off',
       'no-undef': 'off',
-      'vue/no-use-v-if-with-v-for':'off'
+      'vue/no-use-v-if-with-v-for':'off',
+      'no-empty':'off'
     },
     parserOptions: {
       parser: 'babel-eslint'

@@ -27,7 +27,7 @@
                                 <v-card-text>
                                     <template>
                                         <v-stepper v-model="e6" :complete="e6===4" vertical>
-                                            <v-stepper-step color="deep-purple accent-4"  class="black-color" :complete="e6 > 1" step="1">
+                                            <v-stepper-step color="deep-purple accent-4" class="black-color" :complete="e6 > 1" step="1">
                                                 Create ETH Wallet
                                                 <small>Create ETH wallet used to dispense Wealth</small>
                                             </v-stepper-step>
@@ -35,7 +35,7 @@
                                             <v-stepper-content step="1">
                                                 <v-btn @click="e6 = 2" color="deep-purple accent-4">Create</v-btn>
                                             </v-stepper-content>
-                                            <v-stepper-step color="deep-purple accent-4"  :complete="e6 > 2" step="2">Start Date</v-stepper-step>
+                                            <v-stepper-step color="deep-purple accent-4" :complete="e6 > 2" step="2">Start Date</v-stepper-step>
                                             <v-stepper-content step="2">
                                                 <v-card class="mb-12">
                                                     <v-card-text>
@@ -44,12 +44,13 @@
                                                 </v-card>
                                                 <v-row>
                                                     <v-col>
-                                                        <v-btn @click="setStartDate" color="deep-purple accent-4">Continue</v-btn>
+                                                        <v-btn @click="setStartDate" color="deep-purple accent-4">
+                                                            Continue</v-btn>
                                                         <v-btn @click="back" text v-ripple color="deep-purple accent-4">Back</v-btn>
                                                     </v-col>
                                                 </v-row>
                                             </v-stepper-content>
-                                            <v-stepper-step color="deep-purple accent-4"  :complete="e6 > 3" step="3">End Date</v-stepper-step>
+                                            <v-stepper-step color="deep-purple accent-4" :complete="e6 > 3" step="3">End Date</v-stepper-step>
                                             <v-stepper-content step="3">
                                                 <v-card class="mb-12">
                                                     <v-card-text>
@@ -58,12 +59,13 @@
                                                 </v-card>
                                                 <v-row>
                                                     <v-col>
-                                                        <v-btn @click="setEndDate" color="deep-purple accent-4">Continue</v-btn>
+                                                        <v-btn @click="setEndDate" color="deep-purple accent-4">
+                                                            Continue</v-btn>
                                                         <v-btn @click="back" text v-ripple color="deep-purple accent-4">Back</v-btn>
                                                     </v-col>
                                                 </v-row>
                                             </v-stepper-content>
-                                            <v-stepper-step color="deep-purple accent-4"  :complete="e6 > 4" step="4">Approve Transfer of tokens to
+                                            <v-stepper-step color="deep-purple accent-4" :complete="e6 > 4" step="4">Approve Transfer of tokens to
                                                 Created ETH
                                             </v-stepper-step>
                                             <v-stepper-content step="4">
@@ -78,13 +80,16 @@
                                                     </v-card-text>
                                                 </v-card>
                                                 <v-btn :disabled="!valid" @click="approve" color="deep-purple accent-4">Aprove</v-btn>
-                                                <v-btn @click="back" text color="deep-purple accent-4">Cancel</v-btn>
+                                                <v-btn @click="back" text color="deep-purple accent-4">Cancel
+                                                </v-btn>
                                             </v-stepper-content>
-                                            <v-stepper-step color="deep-purple accent-4"  :complete="e6 ===5" step="5">Create Stream
+                                            <v-stepper-step color="deep-purple accent-4" :complete="e6 ===5" step="5">Create Stream
                                             </v-stepper-step>
                                             <v-stepper-content step="5">
-                                                <v-btn @click="startStream" color="deep-purple accent-4">Create</v-btn>
-                                                <v-btn @click="cancelAproval" color="deep-purple accent-4">Cancel</v-btn>
+                                                <v-btn @click="startStream" color="deep-purple accent-4">Create
+                                                </v-btn>
+                                                <v-btn @click="cancelAproval" color="deep-purple accent-4">Cancel
+                                                </v-btn>
                                             </v-stepper-content>
                                         </v-stepper>
                                     </template>
@@ -103,7 +108,7 @@
                             </v-card>
                         </v-col>
                         <v-col v-else v-for="(stream,i) in this.$store.state.streams" :key="i" cols="12" md="4">
-                            <v-card class="mx-auto" max-width="450" v-ripple>
+                            <v-card class="mx-auto" max-width="450">
                                 <v-card-text class="text--primary">
                                     <div>Receipient: {{stream.receipient}}</div>
                                     <div>Sender: {{stream.sender}}</div>
@@ -118,7 +123,7 @@
                                     <v-btn color="deep-purple accent-4" @click="dialog=true; selectedStream=stream" text>
                                         Widthdraw
                                     </v-btn>
-                                    <v-btn color="deep-purple accent-4" text>
+                                    <v-btn color="deep-purple accent-4" text @click="selectedStream=stream;cancelStream()">
                                         Cancel Stream
                                     </v-btn>
                                 </v-card-actions>
@@ -165,7 +170,8 @@
                     Available balance: {{this.selectedStream.remainingBalance}}
                 </v-card-title>
                 <v-divider></v-divider>
-                <v-text-field v-model="withDrawAmount" label="Withdraw Amount" :rules="tokenAmountRules" required></v-text-field>
+                <v-text-field v-model="withDrawAmount" label="Withdraw Amount" :rules="tokenAmountRules" required>
+                </v-text-field>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="primary" text @click="withdrawStream">
@@ -227,27 +233,58 @@ export default {
     methods: {
         withdrawStream() {
             this.isLoading = true
-            this.withDrawAmount = new bignumber(this.widthDrawAmount).toFixed()
-            if (this.withDrawAmount > stream.remainingBalance) {
+            let This = this
+            console.log('withdrawing: ', this.withDrawAmount, ' selectedStream: ', this.selectedStream)
+            this.withDrawAmount = new bigNumber(this.withDrawAmount)
+            this.selectedStream.remainingBalance = new bigNumber(this.selectedStream.remainingBalance).multipliedBy(new bigNumber(10).pow(18)).toFixed()
+            console.log('withdrawing: ', this.withDrawAmount)
+            console.log('selectedStream: ', this.selectedStream)
+            var good = new bigNumber(this.selectedStream.remainingBalance).isGreaterThan(this.withDrawAmount)
+            this.withDrawAmount = new bigNumber(this.withDrawAmount).toFixed()
+            if (!good) {
                 this.error("Cannot withdraw more than whats available")
                 this.isLoading = false
+                This.withDrawAmount = 0
+                This.loadStreams()
             } else {
-                this.$store.state.sablier.methods.withdrawFromStream(this.selectedStream, this.withDrawAmount).send({
-                    gas: 8000000
-                }).then((results, error) => {
-                    if (error) {
-                        this.error("Something went wrong whilst withdrawing from stream")
-                    } else {
-                        this.success("Succesfully withdrew from stream")
-                        this.isLoading = false
+                this.$store.state.sablier.methods.withdrawFromStream(this.selectedStream.id, this.withDrawAmount)
+                    .send({
+                        gas: 8000000
+                    }).then((results, error) => {
+                        if (!error) {
+                            This.success("Succesfully withdrew from stream")
+                            This.isLoading = false
+                            This.dialog = false
+                            This.withDrawAmount = 0
+                            This.loadStreams()
+                        }
+                    }).catch((error) => {
+                        console.error('error whilst widthdrawing: ', error)
+                        This.isLoading = false
                         This.dialog = false
-                    }
-                }).catch((error) => {
-                    this.isLoading = false
-                    This.dialog = false
-                    console.log('errro: ', error)
-                })
+                        This.error("Something went wrong whilst withdrawing from stream")
+                        console.log('errro: ', error)
+                        This.withDrawAmount = 0
+                        This.loadStreams()
+                    })
             }
+        },
+        cancelStream() {
+            this.isLoading = true
+            this.$store.state.sablier.methods.cancelStream(this.selectedStream.id).send({
+                gas: 8000000
+            }).then((results, error) => {
+                if (!error) {
+                    this.success("Succesfully cancelled stream")
+                    this.isLoading = false
+                    this.loadStreams()
+                }
+            }).catch((error) => {
+                this.error("Something went wrong stream doesnt exist")
+                console.error(error)
+                this.isLoading = false
+                this.loadStreams()
+            })
         },
         setEndDate() {
             this.convertedEndDate = new bigNumber((parseInt(new Date(this.endDate).getTime()) / 1000)).toFixed()
@@ -308,7 +345,8 @@ export default {
                 from: web3.eth.defaultAccount,
                 gasPrice: 1000000000000
             })
-            var userAllowance = await newToken.methods.allowance(web3.eth.defaultAccount, this.$store.state.sablier.address).call({
+            var userAllowance = await newToken.methods.allowance(web3.eth.defaultAccount, this.$store.state
+                .sablier.address).call({
                 gas: 8000000
             })
             var This = this
@@ -331,7 +369,8 @@ export default {
         startStream() {
             this.isLoading = true
             let This = this
-            this.$store.state.sablier.methods.createStream(This.ethAddress, This.tokenAmount, This.tokenAddress, This.convertedStartDate, This.convertedEndDate).send({
+            this.$store.state.sablier.methods.createStream(This.ethAddress, This.tokenAmount, This.tokenAddress,
+                This.convertedStartDate, This.convertedEndDate).send({
                 gas: 8000000
             }).then((results, error) => {
                 if (error) {
@@ -339,7 +378,8 @@ export default {
                     this.isLoading = false
                 } else {
                     console.log('streamId: ', results.events.CreateStream.returnValues.streamId)
-                    this.$store.state.streamManager.methods.addToStreamersStreams(results.events.CreateStream.returnValues.streamId).send({
+                    this.$store.state.streamManager.methods.addToStreamersStreams(results.events
+                        .CreateStream.returnValues.streamId).send({
                         gas: 8000000
                     }).then((results, error) => {
                         if (error) {
@@ -405,7 +445,9 @@ export default {
                 }).then((results, error) => {
                     console.log('results: ', results, ' error: ', error)
                     if (error) {
-                        This.error('Something went wrong whilst approving sablier contract to spend tokens')
+                        This.error(
+                            'Something went wrong whilst approving sablier contract to spend tokens'
+                        )
                         This.isLoading = false;
                     } else {
                         this.isLoading = false
@@ -447,11 +489,14 @@ export default {
                                 This.$store.state.streams.push({
                                     "receipient": stream.recipient,
                                     "sender": stream.sender,
-                                    "deposit": stream.deposit,
+                                    "deposit": new bigNumber(stream.deposit).div(
+                                        new bigNumber(10).pow(18)),
                                     "tokenAddress": stream.tokenAddress,
                                     "startTime": stream.startTime,
                                     "stopTime": stream.stopTime,
-                                    "remainingBalance": stream.remainingBalance,
+                                    "remainingBalance": new bigNumber(stream
+                                        .remainingBalance).div(new bigNumber(10)
+                                        .pow(18)),
                                     "ratePerSecond": stream.ratePerSecond,
                                     "id": id
                                 })

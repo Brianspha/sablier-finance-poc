@@ -46,9 +46,7 @@ module.exports = {
     endpoint:  process.env.ROPSTEN, // Endpoint of an node to connect to. Can be on localhost or on the internet
     accounts: [
       {
-        mnemonic: process.env.MNEUMONIC,
-        hdpath: "m/44'/60'/0'/0/",
-        numAddresses: "10"
+        mnemonic: process.env.MNEUMONIC
       }
     ]
   },
