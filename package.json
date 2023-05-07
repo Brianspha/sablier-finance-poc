@@ -22,7 +22,7 @@
     "install": "^0.13.0",
     "luxon": "^1.21.3",
     "node-eth-address": "^0.1.3",
-    "npm": "^6.13.6",
+    "npm": "^6.14.18",
     "sweetalert2": "^9.5.4",
     "vue": "^2.6.10",
     "vue-ctk-date-time-picker": "^2.4.0",
